@@ -1,0 +1,13 @@
+import {createHmac,timingSafeEqual} from 'node:crypto';import type {Pool} from 'pg';import {resolveMember} from './members.ts';import type {Principal} from '../../packages/platform-contracts/index.ts';
+export function chatToolToken(secret:string,id:string,now=Date.now()){const payload=Buffer.from(JSON.stringify({id,expires:now+180000})).toString('base64url');return payload+'.'+createHmac('sha256',secret).update('chat-read:'+payload).digest('hex');}
+export function verifyChatToolToken(secret:string,token:string,now=Date.now()){
+ const [payload,signature,...extra]=token.split('.');if(extra.length||!payload||payload.length>500||!signature||!/^[a-f0-9]{64}$/.test(signature))throw Error('FORBIDDEN');const expected=createHmac('sha256',secret).update('chat-read:'+payload).digest();if(!timingSafeEqual(expected,Buffer.from(signature,'hex')))throw Error('FORBIDDEN');try{const data=JSON.parse(Buffer.from(payload,'base64url').toString());if(typeof data.id!=='string'||!Number.isSafeInteger(data.expires)||data.expires<now||data.expires>now+180000)throw Error();return data.id as string;}catch{throw Error('FORBIDDEN');}
+}
+export async function queryChatOrders(db:Pool,secret:string,token:string,invoke:(p:Principal)=>Promise<any[]>){
+ const id=verifyChatToolToken(secret,token);const job=(await db.query("SELECT * FROM chat_messages WHERE id=$1 AND status='running'",[id])).rows[0];if(!job)throw Error('FORBIDDEN');const p=await resolveMember(db,{tenant:job.tenant,actor:job.actor});
+ const preceding=(await db.query('SELECT message FROM chat_messages WHERE tenant=$1 AND actor=$2 AND created_at<$3 ORDER BY created_at DESC LIMIT 6',[p.tenant,p.actor,job.created_at])).rows;
+ const mentions=(text:string):string[]=>text.match(/\b[A-Za-z][A-Za-z0-9]*-[A-Za-z0-9-]+\b/g)??[];
+ const ids=mentions(job.message);if(!ids.length){const previous=preceding.find(r=>mentions(r.message).length);if(previous)ids.push(...mentions(previous.message));}
+ if(!ids.length)throw Error('ORDER_ID_REQUIRED');const all=await invoke(p);const wanted=new Set(ids.map(x=>x.toLowerCase()));const orders=all.filter(o=>wanted.has(o.id.toLowerCase())).map(o=>({id:o.id,version:o.version,product:o.product,risk:o.risk,due:o.due,overallPercent:Math.round(o.nodes.reduce((s:number,n:any)=>s+n.percent*n.weight,0)),nodes:o.nodes.map((n:any)=>({id:n.id,name:n.name,status:n.status,owner:n.owner,percent:n.percent,plannedDue:n.due}))}));
+ const evidence={capability:'sampling.orders.list',observedAt:new Date().toISOString(),orders};const saved=await db.query("UPDATE chat_messages SET evidence=coalesce(evidence,'[]'::jsonb)||$2::jsonb WHERE id=$1 AND status='running' RETURNING id",[id,JSON.stringify([evidence])]);if(!saved.rowCount)throw Error('FORBIDDEN');return evidence;
+}

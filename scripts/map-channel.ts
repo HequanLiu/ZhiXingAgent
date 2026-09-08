@@ -1,0 +1,5 @@
+import {Pool} from 'pg';import {migrateChannel} from '../apps/platform-api/channel.ts';import {resolveMember} from '../apps/platform-api/members.ts';
+const {SOUNDLAB_CHANNEL_NAME:channel,SOUNDLAB_CHANNEL_SENDER:sender,SOUNDLAB_USER_TENANT:tenant,SOUNDLAB_USER_ACTOR:actor}=process.env;
+if(![channel,sender,tenant,actor].every(v=>typeof v==='string'&&v.length>0&&v.length<=100))throw new Error('Valid channel, sender, tenant and mapped actor required');
+const db=new Pool({connectionString:process.env.PLATFORM_DATABASE_URL??'postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform'});
+try{await migrateChannel(db);await resolveMember(db,{tenant:tenant!,actor:actor!});await db.query('INSERT INTO channel_identities VALUES($1,$2,$3,$4)',[channel,sender,tenant,actor]);console.log('Channel identity mapped. Existing mappings are never overwritten.');}catch{console.error('Mapping failed. Check parameters and existing identity mapping.');process.exitCode=1;}finally{await db.end();}

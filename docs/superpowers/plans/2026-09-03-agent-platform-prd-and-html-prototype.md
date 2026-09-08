@@ -1,5 +1,7 @@
 # Agent Platform PRD and HTML Prototype Implementation Plan
 
+> Historical plan: superseded for new implementation by [Soundlab delivery plan](2026-09-07-soundlab-delivery-plan.md). Do not execute the apparel ERP scope as the current first release.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Produce a complete Chinese PRD and a standalone interactive HTML prototype for the confirmed Agent Enterprise Application Platform, using ERP plus the apparel foreign-trade package as the first product composition.

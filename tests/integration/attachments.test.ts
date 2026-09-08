@@ -1,0 +1,47 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {Pool} from 'pg';
+import {randomUUID,createHash} from 'node:crypto';
+import {existsSync} from 'node:fs';
+import {createOrders} from '../helpers/domain.ts';
+test('attachments retain isolated immutable bytes with versioned exactly-once events',async()=>{
+ assert.ok(existsSync('apps/sample-reference-service/attachments.ts'),'attachment service must exist');
+ const m=await import('../helpers/attachments.ts');
+ const connectionString='postgresql://soundlab_business:business-local-only@127.0.0.1:55439/soundlab_business';
+ const admin=new Pool({connectionString}),schema='test_attachments_'+randomUUID().replaceAll('-','');
+ await admin.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
+ try{
+ await db.query('CREATE TABLE orders(tenant text,id text,data jsonb,PRIMARY KEY(tenant,id));CREATE TABLE mutations(tenant text,key text,fingerprint text,result jsonb,PRIMARY KEY(tenant,key));CREATE TABLE outbox(id text PRIMARY KEY,sequence bigserial,tenant text,object_id text,version integer)');
+ await m.migrateAttachments(db);await m.migrateAttachments(db);
+ const order=createOrders()[0];await db.query('INSERT INTO orders VALUES($1,$2,$3)',[order.tenant,order.id,order]);
+ const p={tenant:'demo',actor:'zhao'},data=Buffer.from('%PDF-1.7\n\x00\xff\n%%EOF'),input={orderId:order.id,nodeId:'assembly',expectedVersion:1,filename:'evidence.pdf',mime:'application/pdf',base64:data.toString('base64')};
+ await assert.rejects(m.uploadAttachment(db,{...p,actor:'wang'},input,'x'),/FORBIDDEN/);
+ await assert.rejects(m.uploadAttachment(db,{...p,tenant:'other'},input,'x'),/NOT_FOUND/);
+ await assert.rejects(m.uploadAttachment(db,p,{...input,nodeId:'requirements'},'x'),/FORBIDDEN|NODE_CLOSED/);
+ await assert.rejects(m.uploadAttachment(db,{...p,actor:'chen'},{...input,nodeId:'requirements'},'x'),/NODE_CLOSED/);
+ await assert.rejects(m.uploadAttachment(db,p,{...input,expectedVersion:2},'x'),/VERSION_CONFLICT/);
+ const [a,b]=await Promise.all([m.uploadAttachment(db,p,input,'first'),m.uploadAttachment(db,p,input,'first')]);assert.deepEqual(a,b);
+ assert.equal(a.sourceVersion,1);assert.equal(a.sha256,createHash('sha256').update(data).digest('hex'));assert.equal(a.size,data.length);
+ assert.ok(!('data' in a)&&!('base64' in a));
+ assert.deepEqual((await m.readAttachment(db,{...p,actor:'li'},a.id)).data,data);
+ assert.deepEqual(await m.listAttachments(db,p,order.id),[a]);
+ await assert.rejects(m.readAttachment(db,{...p,tenant:'other'},a.id),/NOT_FOUND/);
+ await assert.rejects(m.readAttachment(db,{...p,actor:'unknown'},a.id),/FORBIDDEN/);
+ await assert.rejects(m.listAttachments(db,{...p,tenant:'other'},order.id),/NOT_FOUND/);
+ await assert.rejects(m.uploadAttachment(db,p,{...input,filename:'changed.pdf'},'first'),/IDEMPOTENCY_CONFLICT/);
+ await assert.rejects(m.uploadAttachment(db,p,input,'stale'),/VERSION_CONFLICT/);
+ assert.equal((await db.query('SELECT count(*) FROM outbox')).rows[0].count,'1');
+ const stored=(await db.query('SELECT data FROM orders')).rows[0].data;assert.deepEqual(stored,{...order,version:2});
+ const ledger=(await db.query('SELECT result FROM mutations')).rows[0].result;assert.deepEqual(ledger,a);
+ await assert.rejects(db.query("UPDATE sampling_attachments SET filename='changed'"),/immutable/);
+ await assert.rejects(db.query('DELETE FROM sampling_attachments'),/immutable/);
+ const big=Buffer.alloc(2*1024*1024);big.write('%PDF-1.7');
+ for(let i=0;i<4;i++)await m.uploadAttachment(db,{...p,actor:'chen'},{...input,expectedVersion:2+i,base64:big.toString('base64')},'large'+i);
+ await assert.rejects(m.uploadAttachment(db,p,{...input,expectedVersion:6,base64:big.toString('base64')},'limit'),/ATTACHMENT_LIMIT/);
+ assert.equal((await db.query('SELECT count(*) FROM outbox')).rows[0].count,'5');
+ const second={...order,id:'count-limit'};await db.query('INSERT INTO orders VALUES($1,$2,$3)',[second.tenant,second.id,second]);
+ for(let i=0;i<50;i++)await m.uploadAttachment(db,p,{...input,orderId:second.id,expectedVersion:i+1},'count'+i);
+ await assert.rejects(m.uploadAttachment(db,p,{...input,orderId:second.id,expectedVersion:51},'count-over'),/ATTACHMENT_LIMIT/);
+ assert.equal((await m.listAttachments(db,p,second.id)).length,50);
+ }finally{await db.end();await admin.query(`DROP SCHEMA ${schema} CASCADE`);await admin.end();}
+});

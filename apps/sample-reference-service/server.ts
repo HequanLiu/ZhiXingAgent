@@ -1,0 +1,44 @@
+import {installBusinessAuthorization} from './authorization.ts';
+import Fastify from 'fastify';
+import {proposeChange,decideChange,applyChange,listChanges,getInvocation} from './changes.ts';
+import {uploadAttachment,listAttachments,readAttachment} from './attachments.ts';
+import { pool, list, mutate,createProject,configureStoredProject,createProjectBatch,listProjectTemplates,saveProjectTemplate,deleteProjectTemplate } from './store.ts';
+import { type MutationInput } from '../../packages/sampling-contracts/index.ts';
+const app = Fastify({ logger: false });
+const bridgeKey = process.env.BUSINESS_BRIDGE_KEY;
+if (!bridgeKey) throw new Error('BUSINESS_BRIDGE_KEY required');
+installBusinessAuthorization(app,bridgeKey);
+app.get('/health', async () => { await pool.query('SELECT 1'); return { status:'ready' }; });
+app.setErrorHandler((error,req,reply) => {
+  const code = (error as Error).message;
+  const status: Record<string,number> = {ATTACHMENT_TOO_LARGE:413,ATTACHMENT_LIMIT:409,CHANGE_NOT_APPROVED:409,CHANGE_ALREADY_APPLIED:409,CHANGE_ALREADY_DECIDED:409,ORDER_EXISTS:409,FORBIDDEN:403,NOT_FOUND:404,VERSION_CONFLICT:409,IDEMPOTENCY_CONFLICT:409,VALIDATION_ERROR:400,NODE_CLOSED:409,NODE_NOT_READY:409};
+  reply.code(status[code] ?? 500).send({code:status[code]?code:'SERVICE_ERROR'});
+});
+app.get('/templates',async req=>listProjectTemplates(String(req.headers['x-tenant'])));
+app.post('/templates',async req=>saveProjectTemplate(String(req.headers['x-tenant']),String(req.headers['x-actor']),String(req.headers['idempotency-key']??''),req.body));
+app.post<{Params:{id:string};Body:{expectedVersion:number}}>('/templates/:id/delete',async req=>deleteProjectTemplate(String(req.headers['x-tenant']),String(req.headers['x-actor']),req.params.id,String(req.headers['idempotency-key']??''),req.body?.expectedVersion));
+app.post<{Body:{projects:unknown}}>('/orders/batch',async req=>createProjectBatch(String(req.headers['x-tenant']),String(req.headers['x-actor']),String(req.headers['idempotency-key']??''),req.body?.projects));
+app.get('/orders', async req => list(String(req.headers['x-tenant'])));
+app.post('/orders',async req=>createProject(String(req.headers['x-tenant']),String(req.headers['x-actor']),String(req.headers['idempotency-key']??''),req.body));
+app.post<{Params:{id:string}}>('/orders/:id/configure',async req=>configureStoredProject(String(req.headers['x-tenant']),String(req.headers['x-actor']),req.params.id,String(req.headers['idempotency-key']??''),req.body));
+const identity=(headers:Record<string,unknown>)=>({tenant:String(headers['x-tenant']),actor:String(headers['x-actor'])});
+app.get('/changes',async req=>listChanges(pool,identity(req.headers)));
+app.get<{Querystring:{orderId:string}}>('/attachments',async req=>listAttachments(pool,identity(req.headers),req.query.orderId));
+app.post('/attachments',{bodyLimit:3*1024*1024},async req=>uploadAttachment(pool,identity(req.headers),req.body,String(req.headers['idempotency-key']??'')));
+app.get<{Params:{id:string}}>('/attachments/:id',async req=>{const result=await readAttachment(pool,identity(req.headers),req.params.id);return {metadata:result.metadata,base64:result.data.toString('base64')};});
+app.post('/changes',async req=>proposeChange(pool,identity(req.headers),req.body,String(req.headers['idempotency-key']??'')));
+app.post<{Params:{id:string};Body:{decision:'approve'|'reject';expectedPlanVersion:number}}>('/changes/:id/decide',async req=>decideChange(pool,identity(req.headers),req.params.id,req.body?.decision,req.body?.expectedPlanVersion));
+app.post<{Params:{id:string}}>('/changes/:id/apply',async req=>applyChange(pool,identity(req.headers),req.params.id,String(req.headers['idempotency-key']??'')));
+app.get<{Querystring:{id?:string;key?:string}}>('/invocations',async req=>getInvocation(pool,identity(req.headers),req.query as {id:string}|{key:string}));
+app.get<{Querystring:{after?:string}}>('/events',async req=>{
+  const after=Number(req.query.after??0);
+  if(!Number.isSafeInteger(after)||after<0)throw new Error('VALIDATION_ERROR');
+  return (await pool.query('SELECT * FROM outbox WHERE tenant=$1 AND sequence>$2 ORDER BY sequence LIMIT 100',[String(req.headers['x-tenant']),after])).rows;
+});
+for (const kind of ['feedback','assign','accept','return'] as const) app.post<{Params:{id:string};Body:MutationInput}>(`/orders/:id/${kind}`, async req => {
+  if (!req.body || typeof req.body.nodeId !== 'string' || !Number.isInteger(req.body.expectedVersion)) throw new Error('VALIDATION_ERROR');
+  return mutate(String(req.headers['x-tenant']), String(req.headers['x-actor']), req.params.id, String(req.headers['idempotency-key'] ?? ''),kind,req.body);
+});
+await app.listen({host:'127.0.0.1',port:4311});
+console.log('Sample service ready at http://127.0.0.1:4311');
+for (const signal of ['SIGINT','SIGTERM'] as const) process.on(signal, async () => { await app.close(); await pool.end(); process.exit(0); });

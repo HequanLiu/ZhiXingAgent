@@ -1,0 +1,34 @@
+import {seedTestMembers} from '../helpers/member-db.ts';
+import test from 'node:test';import assert from 'node:assert/strict';import {Pool} from 'pg';import {randomUUID} from 'node:crypto';
+import {CapabilityGateway} from '../../apps/platform-api/gateway.ts';
+test('persistent capability bindings survive reconstruction, isolate tenants, and reject incompatible or stale installs',async()=>{
+ const {InstallationRegistry,migrateInstallations}=await import('../../apps/platform-api/installations.ts');
+ const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';const root=new Pool({connectionString});const schema='test_install_'+randomUUID().replaceAll('-','');await root.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
+ const manifest:any={id:'scenario',version:'1',capabilities:[{id:'read',version:'1',effect:'read',input:{type:'object'}}]};
+ const catalog:any={one:{label:'one',capabilities:{read:'1'},provider:{invoke:async()=>({source:1})}},two:{label:'two',capabilities:{read:'1'},provider:{invoke:async()=>({source:2})}},old:{label:'old',capabilities:{read:'0'},provider:{invoke:async()=>({})}}};
+ try{await seedTestMembers(db);await migrateInstallations(db);const registry=new InstallationRegistry(db,manifest,catalog,'one');const p={tenant:'a',actor:'chen'};
+  const input={expectedVersion:0,enabled:true,bindings:{read:'two'}};
+  await assert.rejects(registry.save({...p,actor:'wang'},input,'k'),/FORBIDDEN/);
+  await assert.rejects(registry.save(p,{...input,bindings:{read:'old'}},'k'),/CAPABILITY_VERSION_MISMATCH/);
+  const saved=await registry.save(p,input,'k');assert.equal(saved.version,1);assert.deepEqual(await registry.save(p,input,'k'),saved);
+  await assert.rejects(registry.save(p,{...input,bindings:{read:'one'}},'k'),/IDEMPOTENCY_CONFLICT/);
+  const restored=new InstallationRegistry(db,manifest,catalog,'one');assert.deepEqual(await(await restored.resolve('read',p)).invoke('read',{},p),{source:2});
+  let fallbackCalls=0;
+  const gateway=new CapabilityGateway((cap,principal)=>restored.resolve(cap,principal));
+  gateway.install(p.tenant,manifest,{read:{version:'1',provider:{invoke:async()=>{fallbackCalls++;return {source:'stale'};}}}});
+  assert.deepEqual(await gateway.invoke('read',{},p),{source:2});
+  assert.deepEqual(await(await restored.resolve('read',{...p,tenant:'b'})).invoke('read',{},p),{source:1});
+  await assert.rejects(restored.save(p,{...input,bindings:{read:'one'}},'other'),/VERSION_CONFLICT/);
+  await restored.save(p,{expectedVersion:1,enabled:false,bindings:{read:'two'}},'disable');await assert.rejects(restored.resolve('read',p),/CAPABILITY_UNAVAILABLE/);
+  await assert.rejects(gateway.invoke('read',{},p),/CAPABILITY_UNAVAILABLE/);assert.equal(fallbackCalls,0);
+  assert.equal((await db.query('SELECT * FROM installation_audit')).rowCount,2);
+  const competing={expectedVersion:2,enabled:true,bindings:{read:'one'}};
+  const results=await Promise.allSettled([restored.save(p,competing,'race-one'),restored.save(p,competing,'race-two')]);
+  assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
+  const failure=results.find(r=>r.status==='rejected');assert.equal(failure?.status,'rejected');
+  if(failure?.status==='rejected')assert.match(failure.reason.message,/VERSION_CONFLICT/);
+  assert.equal((await restored.read(p.tenant)).version,3);
+  assert.equal((await db.query('SELECT * FROM installation_audit')).rowCount,3);
+  assert.equal((await db.query('SELECT * FROM installation_mutations')).rowCount,3);
+ }finally{await db.end();await root.query(`DROP SCHEMA ${schema} CASCADE`);await root.end();}
+});

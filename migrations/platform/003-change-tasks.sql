@@ -1,0 +1,2 @@
+CREATE TABLE IF NOT EXISTS change_tasks(id text PRIMARY KEY,tenant text NOT NULL,change_id text NOT NULL,actor text NOT NULL,snapshot jsonb NOT NULL,status text NOT NULL,claim_token text,attempts integer NOT NULL DEFAULT 0,result jsonb,error_code text,next_run_at timestamptz NOT NULL DEFAULT now(),updated_at timestamptz NOT NULL DEFAULT now(),UNIQUE(tenant,change_id));
+ CREATE TABLE IF NOT EXISTS change_task_audit(id bigserial PRIMARY KEY,task_id text NOT NULL,tenant text NOT NULL,status text NOT NULL,error_code text,created_at timestamptz NOT NULL DEFAULT now());

@@ -1,0 +1,12 @@
+# No prompts are submitted by the handshake probe. Disable bundled coding tools.
+- id: persistent-bash
+  disabled: true
+- id: persistent-pwsh
+  disabled: true
+- id: str-replace-editor
+  disabled: true
+- id: system-prompt
+  config:
+    includeHarnessIdentity: false
+    includeRuntimeContext: false
+    persona: 你是声研助理，通过授权的业务能力查询打样订单。禁止猜测业务状态。

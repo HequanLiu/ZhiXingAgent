@@ -1,0 +1,10 @@
+import React from 'react';
+import {createRoot} from 'react-dom/client';
+import {ConfigProvider} from 'antd';
+import zhCN from 'antd/locale/zh_CN';
+import {QueryClient,QueryClientProvider} from '@tanstack/react-query';
+import {AuthGate} from './AuthGate.tsx';
+import './style.css';
+import './workbench.css';
+const queryClient=new QueryClient({defaultOptions:{queries:{retry:1,refetchOnWindowFocus:true}}});
+createRoot(document.getElementById('root')!).render(<React.StrictMode><ConfigProvider locale={zhCN} theme={{token:{colorPrimary:'#7850d8',borderRadius:9,fontFamily:'Inter, "Microsoft YaHei", sans-serif',colorText:'#272137',colorBorder:'#e6e1ed'},components:{Table:{headerBg:'#f8f7fb',rowSelectedBg:'#f1eafa'},Button:{primaryShadow:'none'}}}}><QueryClientProvider client={queryClient}><AuthGate/></QueryClientProvider></ConfigProvider></React.StrictMode>);

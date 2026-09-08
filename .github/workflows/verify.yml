@@ -1,0 +1,38 @@
+name: Verify Soundlab
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: soundlab_admin
+          POSTGRES_PASSWORD: soundlab-local-only
+        ports: ['55439:5432']
+        options: >-
+          --health-cmd "pg_isready -U soundlab_admin"
+          --health-interval 3s --health-timeout 3s --health-retries 20
+    env:
+      SOUNDLAB_MODEL_ANALYSIS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.19.0'
+      - uses: pnpm/action-setup@v4
+        with:
+          version: '11.7.0'
+      - run: pnpm install --frozen-lockfile
+      - name: Initialize isolated database roles
+        env:
+          PGPASSWORD: soundlab-local-only
+        run: psql -h 127.0.0.1 -p 55439 -U soundlab_admin -d postgres -v ON_ERROR_STOP=1 -f config/init-databases.sql
+      - run: pnpm db:init
+      - run: pnpm db:init
+      - run: pnpm test
+      - run: pnpm test:integration
+      - run: pnpm typecheck
+      - run: pnpm build

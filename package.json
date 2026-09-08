@@ -1,0 +1,50 @@
+{
+  "name": "soundlab-agent-platform",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "scripts": {
+    "test": "node --import tsx --test tests/*.test.mjs tests/*.test.ts",
+    "probe:harness": "node scripts/probe-harness.mjs",
+    "probe:model": "node scripts/probe-model.mjs",
+    "probe:business": "node scripts/probe-model.mjs --business",
+    "dev": "node scripts/dev.mjs",
+    "start": "node scripts/start.mjs",
+    "backup": "node scripts/backup.mjs",
+    "backup:verify": "node scripts/verify-restore.mjs",
+    "user:provision": "tsx scripts/provision-user.ts",
+    "channel:map": "tsx scripts/map-channel.ts",
+    "smoke:acceptance": "node scripts/acceptance-smoke.mjs",
+    "smoke:patrol": "node scripts/patrol-smoke.mjs",
+    "db:init": "tsx scripts/init-db.ts",
+    "typecheck": "tsc --noEmit",
+    "test:integration": "node --import tsx --test tests/integration/*.test.ts",
+    "build": "vite build --config apps/web/vite.config.ts",
+    "healthcheck": "node scripts/healthcheck.mjs",
+    "smoke:browser": "node scripts/browser-smoke.mjs",
+    "release:package": "node scripts/package-release.mjs",
+    "member:bootstrap": "tsx scripts/bootstrap-member.ts"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "5.102.8",
+    "antd": "6.6.2",
+    "fastify": "5.12.3",
+    "pg": "8.23.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.0",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "@vitejs/plugin-react": "6.1.1",
+    "playwright-core": "^1.63.0",
+    "tsx": "4.23.13",
+    "typescript": "7.0.2",
+    "vite": "8.2.2"
+  }
+}

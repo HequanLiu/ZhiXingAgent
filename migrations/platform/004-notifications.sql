@@ -1,0 +1,6 @@
+
+CREATE TABLE IF NOT EXISTS patrol_issue_state(tenant text NOT NULL,object_id text NOT NULL,issue_key text NOT NULL,first_seen_at timestamptz NOT NULL,active boolean NOT NULL DEFAULT true,episode integer NOT NULL DEFAULT 1,PRIMARY KEY(tenant,object_id,issue_key));
+CREATE TABLE IF NOT EXISTS patrol_escalations(id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,tenant text NOT NULL,object_id text NOT NULL,issue_key text NOT NULL,episode integer NOT NULL,owner text NOT NULL DEFAULT 'chen',summary text NOT NULL,created_at timestamptz NOT NULL DEFAULT now(),UNIQUE(tenant,object_id,issue_key,episode));
+CREATE TABLE IF NOT EXISTS notification_outbox(id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,tenant text NOT NULL,dedupe_key text NOT NULL,payload jsonb NOT NULL,recipient text,status text NOT NULL CHECK(status IN ('pending','sending','sent','failed','unknown','skipped')),attempts integer NOT NULL DEFAULT 0,next_attempt_at timestamptz NOT NULL DEFAULT now(),claim_token text,created_at timestamptz NOT NULL DEFAULT now(),updated_at timestamptz NOT NULL DEFAULT now(),UNIQUE(tenant,dedupe_key));
+CREATE TABLE IF NOT EXISTS notification_audit(id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,outbox_id bigint NOT NULL REFERENCES notification_outbox(id),event text NOT NULL,created_at timestamptz NOT NULL DEFAULT now());
+
