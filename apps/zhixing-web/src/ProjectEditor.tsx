@@ -1,6 +1,6 @@
 import {useMembers} from './Members';
 import {previewProjectBatch,validateProject} from '../../../packages/sampling-contracts/project-validation.ts';
-import type {ProjectTemplate} from '../../../apps/sample-reference-service/project.ts';
+import type {ProjectTemplate} from '../../../apps/soundlab-api/project.ts';
 import {useEffect,useRef,useState} from 'react';
 import {Alert,Button,Form,Input,InputNumber,Modal,Select} from 'antd';
 

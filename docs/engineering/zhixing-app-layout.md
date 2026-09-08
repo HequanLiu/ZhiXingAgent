@@ -4,6 +4,8 @@
 
 API 和 Worker 分别迁入 `apps/zhixing-api`、`apps/zhixing-worker`；启动入口、平台间导入、测试和 workspace 锁文件同步更新。`apps/zhixing-harness` 保存配置和源码定位逻辑；其 `upstream` 目录保存完整官方源码快照。数据库迁移文件保持原样，避免变更既有校验和。
 
+前端与声研业务服务随后统一命名为 `apps/zhixing-web`（`@zhixing/web`）和 `apps/soundlab-api`（`@soundlab/api`）。命名采用“所属产品 + 职责”，平台使用 `zhixing-*`，声研业务使用 `soundlab-*`；前端产物继续输出到 `dist/web`，维持现有部署路径。
+
 上游固定提交：`d347e703908d0406b7a7ef80e3a0e594d86b2215`。暂存区 9,080 个文件逐项对比上游 Git blob 和文件模式，差异为零；保留 MIT 许可证、内部符号链接及脚本可执行位。没有复制上游 Git 数据、依赖或本地运行配置。
 
 本轮验证：

@@ -11,7 +11,8 @@
 - `apps/zhixing-api`：平台 API。
 - `apps/zhixing-worker`：后台任务执行。
 - `apps/zhixing-harness`：Harness 配置、源码定位与固定版本上游源码。
-- `apps/web`：前端；`apps/sample-reference-service`：示例业务服务。
+- `apps/zhixing-web`：知行平台前端。
+- `apps/soundlab-api`：声研实验室打样业务服务。
 
 ## 已有能力
 

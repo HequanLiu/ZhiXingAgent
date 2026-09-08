@@ -55,9 +55,9 @@ importers:
         specifier: 8.2.2
         version: 8.2.2(@types/node@22.20.0)(esbuild@0.28.2)(tsx@4.23.13)
 
-  apps/sample-reference-service: {}
+  apps/soundlab-api: {}
 
-  apps/web: {}
+  apps/zhixing-web: {}
 
   apps/zhixing-api: {}
 

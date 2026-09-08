@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {existsSync} from 'node:fs';
 test('attachment inputs enforce bounded canonical binary and safe names',async()=>{
- assert.ok(existsSync('apps/sample-reference-service/attachments.ts'),'attachment service must exist');
+ assert.ok(existsSync('apps/soundlab-api/attachments.ts'),'attachment service must exist');
  const {validateAttachmentInput}=await import('./helpers/attachments.ts');
  const bytes=Buffer.from('%PDF-1.7\nexample\n%%EOF');
  const input={orderId:'A26-018',nodeId:'assembly',expectedVersion:1,filename:'证据.pdf',mime:'application/pdf',base64:bytes.toString('base64')};

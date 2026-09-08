@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {newProject,configureProject} from './helpers/project.ts';
-import {evaluateSchedule} from '../apps/sample-reference-service/schedule.ts';
+import {evaluateSchedule} from '../apps/soundlab-api/schedule.ts';
 const nodes=()=>[{id:'a',name:'design',owner:'chen',due:'2026-09-10',weight:0.5,dependencies:[],durationDays:1,acceptanceCriteria:'drawing approved'},{id:'b',name:'assembly',owner:'zhao',due:'2026-09-12',weight:0.5,dependencies:['a'],durationDays:2,acceptanceCriteria:'inspection passed'}];
 const calendar={weekdays:[1,2,3,4,5],holidays:[]};
 const order=()=>newProject({id:'C-001',product:'speaker',customer:'customer',due:'2026-09-30',calendar,nodes:nodes()},'demo','chen');

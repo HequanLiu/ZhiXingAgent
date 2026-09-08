@@ -1,1 +1,0 @@
-{"name":"@soundlab/sample-reference-service","private":true,"type":"module","scripts":{"dev":"tsx server.ts"}}

@@ -19,7 +19,7 @@
     "db:init": "tsx scripts/init-db.ts",
     "typecheck": "tsc --noEmit",
     "test:integration": "node --import tsx --test tests/integration/*.test.ts",
-    "build": "vite build --config apps/web/vite.config.ts",
+    "build": "vite build --config apps/zhixing-web/vite.config.ts",
     "healthcheck": "node scripts/healthcheck.mjs",
     "smoke:browser": "node scripts/browser-smoke.mjs",
     "release:package": "node scripts/package-release.mjs",

@@ -25,8 +25,8 @@
 |---|---|
 | apps/zhixing-api/ | 通用任务、能力网关、审批及查询入口 |
 | apps/zhixing-worker/ | Outbox/Inbox 消费、定时唤醒及执行恢复 |
-| apps/sample-reference-service/ | 独立权威打样服务和示例数据 |
-| apps/web/ | 声研实验室桌面入口、移动反馈和人工操作 |
+| apps/soundlab-api/ | 独立权威打样服务和示例数据 |
+| apps/zhixing-web/ | 声研实验室桌面入口、移动反馈和人工操作 |
 | packages/platform-contracts/ | 通用信封、对象引用及运行适配接口 |
 | packages/sampling-contracts/ | 打样领域能力 Schema |
 | packages/runtime-deepseek/ | 经过核验的 Harness 集成 |

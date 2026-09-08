@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import Fastify from 'fastify';
-import {installBusinessAuthorization} from '../apps/sample-reference-service/authorization.ts';
-import {newProject} from '../apps/sample-reference-service/project.ts';
-import {applyFeedback,acceptNode} from '../apps/sample-reference-service/domain.ts';
+import {installBusinessAuthorization} from '../apps/soundlab-api/authorization.ts';
+import {newProject} from '../apps/soundlab-api/project.ts';
+import {applyFeedback,acceptNode} from '../apps/soundlab-api/domain.ts';
 import type {Order} from '../packages/sampling-contracts/index.ts';
 test('HTTP bridge resolves real dynamic members, preserves feedback and acceptance actors, and rejects forged role and read-service writes',async()=>{
  const app=Fastify();let members=[{tenant:'acme',actor:'mgr-22',role:'manager',enabled:true},{tenant:'acme',actor:'worker-83',role:'member',enabled:true}];let order:Order;

@@ -5,7 +5,7 @@ import {randomUUID} from 'node:crypto';
 import {existsSync} from 'node:fs';
 import {createOrders} from '../helpers/domain.ts';
 test('change approval transaction lifecycle and safeguards',async()=>{
- assert.ok(existsSync('apps/sample-reference-service/changes.ts'),'change approval service must exist');
+ assert.ok(existsSync('apps/soundlab-api/changes.ts'),'change approval service must exist');
  const m=await import('../helpers/changes.ts');
  const connectionString='postgresql://soundlab_business:business-local-only@127.0.0.1:55439/soundlab_business';
  const admin=new Pool({connectionString});const schema='test_changes_'+randomUUID().replaceAll('-','');

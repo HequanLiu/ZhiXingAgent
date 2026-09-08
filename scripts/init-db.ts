@@ -3,7 +3,7 @@ import {Pool} from 'pg';
 import {createHash} from 'node:crypto';
 import {readdir,readFile} from 'node:fs/promises';
 import {runMigrations} from './lib/migrations.ts';
-import {createOrders} from '../apps/sample-reference-service/domain.ts';
+import {createOrders} from '../apps/soundlab-api/domain.ts';
 for(const name of ['business','platform'] as const){
  const fallback=name==='business'?'postgresql://soundlab_business:business-local-only@127.0.0.1:55439/soundlab_business':'postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';
  const db=new Pool({connectionString:process.env[name.toUpperCase()+'_DATABASE_URL']??fallback});
