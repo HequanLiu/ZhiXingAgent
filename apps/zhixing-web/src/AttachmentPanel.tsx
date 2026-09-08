@@ -1,5 +1,6 @@
+import {BusinessModal} from './BusinessModal';
 import {useMembers} from './Members';
-import {useRef,useState} from 'react';import {Alert,Button,Modal,Select,Table} from 'antd';import {useMutation,useQuery,useQueryClient} from '@tanstack/react-query';
+import {useRef,useState} from 'react';import {Alert,Button,Select,Table} from 'antd';import {useMutation,useQuery,useQueryClient} from '@tanstack/react-query';
 import type {Order} from '../../../packages/sampling-contracts/index.ts';
 export function AttachmentPanel({order,actor,api,onClose}:{order:Order;actor:string;api:(path:string,body?:unknown,key?:string)=>Promise<any>;onClose:()=>void}){
  const {people,ownerOptions,isManager}=useMembers();
@@ -7,9 +8,9 @@ export function AttachmentPanel({order,actor,api,onClose}:{order:Order;actor:str
  const query=useQuery<any[]>({queryKey:['attachments',order.tenant,actor,order.id],queryFn:()=>api('/api/soundlab/attachments?orderId='+encodeURIComponent(order.id))});
  const upload=useMutation({mutationFn:async(file:File)=>{if(file.size>2*1024*1024)throw new Error('文件不能超过 2 MiB');const base64=await new Promise<string>((resolve,reject)=>{const reader=new FileReader();reader.onerror=()=>reject(new Error('文件读取失败'));reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.readAsDataURL(file);});return api('/api/soundlab/attachments',{orderId:order.id,nodeId,expectedVersion:order.version,filename:file.name,mime:file.type,base64},key.current);},onSuccess:()=>{void client.invalidateQueries({queryKey:['attachments']});void client.invalidateQueries({queryKey:['orders']});}});
  async function download(item:any){try{const r=await fetch('/api/soundlab/attachments/'+encodeURIComponent(item.id),{headers:{'x-demo-user':actor}});if(!r.ok)throw new Error('下载失败或无权访问');const url=URL.createObjectURL(await r.blob());const a=document.createElement('a');a.href=url;a.download=item.filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setError('');}catch(e){setError((e as Error).message);}}
- return <Modal title={`${order.id} · 图片与检测附件`} open width={850} onCancel={onClose} footer={null}><Alert type="info" title="支持 PNG、JPEG、PDF，单文件最多 2 MiB。文件与订单分开保存，不进入模型证据。"/>
-  {eligible.length>0&&<><p>关联节点</p><Select value={nodeId} onChange={setNodeId} options={eligible.map(n=>({value:n.id,label:n.name}))}/><input aria-label="上传节点附件" type="file" accept="image/png,image/jpeg,application/pdf" disabled={upload.isPending||!nodeId} onChange={e=>{const file=e.target.files?.[0];if(file){key.current=crypto.randomUUID();upload.mutate(file);}e.target.value='';}}/></>}
+ return <BusinessModal title={`${order.id} · 图片与检测附件`} description="按节点归档图片与检测文件，方便团队核对。" open width={850} onCancel={onClose} footer={null}><Alert type="info" title="支持 PNG、JPEG、PDF，单文件最多 2 MiB。文件与订单分开保存，不进入模型证据。"/>
+  {eligible.length>0&&<div className="upload-zone"><label>选择关联节点</label><Select value={nodeId} onChange={setNodeId} options={eligible.map(n=>({value:n.id,label:n.name}))}/><input aria-label="上传节点附件" type="file" accept="image/png,image/jpeg,application/pdf" disabled={upload.isPending||!nodeId} onChange={e=>{const file=e.target.files?.[0];if(file){key.current=crypto.randomUUID();upload.mutate(file);}e.target.value='';}}/></div>}
   {(upload.isError||error)&&<Alert type="error" title={error||upload.error?.message}/>}{query.isError&&<Alert type="error" title="附件列表读取失败"/>}
-  <Table rowKey="id" size="small" dataSource={query.data??[]} pagination={{pageSize:6}} columns={[{title:'文件',dataIndex:'filename'},{title:'节点',render:(_,a)=>order.nodes.find(n=>n.id===a.nodeId)?.name??a.nodeId},{title:'大小',render:(_,a)=>(a.size/1024).toFixed(1)+' KiB'},{title:'依据版本',dataIndex:'sourceVersion'},{title:'操作',render:(_,a)=><Button onClick={()=>void download(a)}>下载</Button>}]}/>
- </Modal>;
+  <Table loading={query.isPending} scroll={{x:600}} locale={{emptyText:'暂无附件，上传后可在这里下载核对'}} rowKey="id" size="small" dataSource={query.data??[]} pagination={{pageSize:6}} columns={[{title:'文件',dataIndex:'filename'},{title:'节点',render:(_,a)=>order.nodes.find(n=>n.id===a.nodeId)?.name??a.nodeId},{title:'大小',render:(_,a)=>(a.size/1024).toFixed(1)+' KiB'},{title:'依据版本',dataIndex:'sourceVersion'},{title:'操作',render:(_,a)=><Button onClick={()=>void download(a)}>下载</Button>}]}/>
+ </BusinessModal>;
 }

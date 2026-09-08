@@ -1,0 +1,82 @@
+.business-modal{max-width:calc(100vw - 40px);padding-bottom:0}
+.business-modal .ant-modal-container{padding:0;overflow:hidden;border:1px solid #e5dcf0;box-shadow:0 24px 90px #24133630;border-radius:18px}
+.business-modal .ant-modal-header{padding:24px 56px 20px 28px;margin:0;background:linear-gradient(115deg,#fcfaff,#f2ecfc);border-bottom:1px solid #e8dff2}
+.business-modal .ant-modal-close{top:20px;inset-inline-end:20px;background:#fff9;border-radius:50%;width:32px;height:32px}
+.dialog-eyebrow{display:block;color:#9074ad;font-size:11px;font-weight:500;letter-spacing:1.5px;margin-bottom:7px}
+.dialog-title{font-size:22px;font-weight:650;line-height:1.4;color:#352344;overflow-wrap:anywhere}
+.dialog-heading p{margin:8px 0 0;color:#80708e;font-size:13px;font-weight:400;line-height:1.7}
+.business-modal .ant-modal-body{max-height:calc(100dvh - 250px);overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;background:#faf9fc}
+.dialog-content{padding:24px 28px;min-width:0;color:#493d54;font-size:14px;line-height:1.75;overflow-wrap:anywhere}
+.business-modal .ant-modal-footer{margin:0;padding:14px 28px;border-top:1px solid #e9e3ef;background:#fff}
+.business-modal .ant-btn{min-height:36px;border-radius:8px;white-space:normal;height:auto}
+.business-modal .ant-btn-sm{min-height:30px;font-size:12px}
+.business-modal .ant-form-item{margin-bottom:18px}
+.business-modal .ant-form-item-label>label{height:auto;color:#584565;font-weight:500}
+.business-modal .ant-input-number,.business-modal .ant-form-item .ant-select{width:100%}
+.business-modal .ant-input,.business-modal .ant-input-number,.business-modal .ant-select-selector{border-radius:8px}
+.business-modal .ant-form-item:not([hidden]) .ant-input:not(textarea){min-height:36px}
+.business-modal .quantity-grid,.dialog-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px;min-width:0}
+.business-modal .quantity-grid>*{min-width:0}
+.business-modal .template-controls{gap:12px}
+.dialog-toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 18px}
+.dialog-toolbar>.ant-input-affix-wrapper{flex:1;min-width:180px}
+.dialog-toolbar>.ant-input-group-wrapper{flex:1;min-width:180px;width:auto}
+.dialog-toolbar>.ant-select{min-width:150px}
+.dialog-stack{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;min-width:0}
+.dialog-stack>*{min-width:0}
+.dialog-content>.ant-alert,.dialog-content>.ant-form,.dialog-content>.ant-table-wrapper{margin-bottom:20px}
+.business-modal .ant-alert{border-radius:10px;line-height:1.7;margin-block:10px 18px}
+.business-modal .ant-alert-info{background:#f3eefb;border:1px solid #e5daf5;color:#674d81}
+.business-modal .ant-tabs-nav{margin-bottom:22px}
+.business-modal .ant-tabs-tab{padding-block:8px 14px;font-weight:500}
+.business-modal .ant-tabs-content-holder,.business-modal .ant-tabs-tabpane{min-width:0}
+.panel-section{padding:20px;background:#fff;border:1px solid #e8e2ee;border-radius:12px;margin-bottom:18px;min-width:0}
+.panel-section>header{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:18px}
+.panel-section h3{margin:0;font-size:16px;color:#392948;line-height:1.5}
+.panel-section header p{margin:5px 0 0;color:#887b92;font-size:12px;line-height:1.7}
+.panel-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:22px}
+.panel-stats>div{padding:14px 16px;border:1px solid #e5ddef;border-radius:11px;background:linear-gradient(135deg,#fff,#f6f1fc)}
+.panel-stats span{display:block;color:#8a7999;font-size:12px}
+.panel-stats strong{display:block;font-size:22px;color:#674390;margin-top:4px;font-weight:600}
+.dialog-actions{display:flex;justify-content:flex-end;align-items:center;gap:10px;position:sticky;bottom:0;z-index:2;margin:20px -1px 0;padding:12px 0;background:linear-gradient(#faf9fcf2,#faf9fc);border-top:1px solid #e9e1f0}
+.panel-section .dialog-actions{background:#fff;bottom:0}
+.business-modal .ant-table-wrapper{max-width:100%;min-width:0}
+.business-modal .ant-table{border:1px solid #eee8f2;border-radius:10px;overflow:hidden}
+.business-modal .ant-table-cell{padding:12px 14px!important;font-size:13px;vertical-align:top;max-width:300px;overflow-wrap:anywhere}
+.business-modal .ant-table-thead>tr>th{background:#f6f3fa!important;color:#81708e;font-size:12px;font-weight:500;white-space:nowrap}
+.business-modal .ant-table-cell .ant-btn{margin:2px 4px 2px 0}
+.business-modal .ant-table-pagination{margin-bottom:0}
+.business-modal .ant-empty{padding:22px 0;color:#93849e}
+.business-modal details{border:1px solid #e7deef;border-radius:10px;padding:12px 16px;margin:12px 0;background:#fff}
+.business-modal summary{cursor:pointer;color:#745294;font-weight:500;line-height:1.7}
+.record-card{padding:18px;background:#fff;border:1px solid #e7deef;border-radius:12px;min-width:0}
+.record-card+.record-card{margin-top:14px}
+.record-card h4{margin:0 0 8px;color:#493256;font-size:15px}
+.record-meta{display:flex;flex-wrap:wrap;gap:6px 14px;color:#92819e;font-size:12px;line-height:1.7;margin:6px 0 12px}
+.record-card p{margin:8px 0;white-space:pre-wrap}
+.business-modal .analysis-card{padding:18px;margin:0 0 16px;border-radius:12px;background:white;border:1px solid #e7deef}
+.business-modal .analysis-text{font-size:14px;line-height:1.9;color:#4f405b;white-space:pre-wrap}
+.business-modal .muted{color:#92849d;font-size:12px;line-height:1.7}
+.status-summary,.evidence-summary{padding:16px 18px;border-radius:10px;background:#f5effb;border:1px solid #e6daf3;margin-bottom:18px}
+.evidence-timeline{padding-top:12px}
+.business-modal .project-node-editor{border:1px solid #e5dded;border-radius:12px;padding:18px;background:white;margin:16px 0}
+.business-modal .project-node-editor h4{margin:0 0 18px;font-size:15px;color:#765099}
+.business-modal .ant-radio-group{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+.upload-zone{padding:22px;border:1px dashed #c9b4e2;border-radius:12px;background:#faf6ff;margin:18px 0;display:grid;gap:12px}
+.upload-zone input[type=file]{max-width:100%;font-size:13px;color:#746280}
+.upload-zone input::file-selector-button{padding:9px 16px;border:1px solid #d2c0e4;border-radius:7px;background:#fff;color:#735194;margin-right:12px;cursor:pointer}
+@media(max-width:600px){
+ .business-modal{max-width:calc(100vw - 16px);margin:8px auto}
+ .business-modal .ant-modal-container{border-radius:14px}
+ .business-modal .ant-modal-header{padding:18px 48px 16px 18px}
+ .dialog-title{font-size:19px}.dialog-eyebrow{font-size:10px}
+ .business-modal .ant-modal-close{top:18px;inset-inline-end:12px}
+ .business-modal .ant-modal-body{max-height:calc(100dvh - 220px)}
+ .dialog-content{padding:18px 16px}.business-modal .ant-modal-footer{padding:12px 16px}
+ .business-modal .quantity-grid,.dialog-grid{grid-template-columns:minmax(0,1fr)}
+ .panel-section{padding:15px}.panel-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .panel-stats>div{padding:11px}.panel-stats strong{font-size:18px}
+ .dialog-toolbar>*{max-width:100%}.dialog-toolbar>.ant-input-affix-wrapper,.dialog-toolbar>.ant-input-group-wrapper{min-width:0;width:100%;flex-basis:100%}
+ .dialog-actions{bottom:0;flex-wrap:wrap}.dialog-actions .ant-btn{flex:1}
+ .record-card{padding:14px}.business-modal .ant-table-cell{max-width:220px}
+}
