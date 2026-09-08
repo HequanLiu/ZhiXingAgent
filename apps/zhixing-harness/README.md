@@ -13,7 +13,7 @@ pnpm.cmd harness:build
 pnpm.cmd probe:harness
 ```
 
-`harness:install` 跳过上游依赖的安装脚本，因此握手前还需构建原生 `fs-ext`；Windows 需要 Python 和 Visual Studio C++ Build Tools，具体命令见根 README 的 Windows 原生模块章节。这与旧源码目录的构建要求一致。
+`harness:install` 跳过上游依赖的安装脚本，因此握手前还需构建原生 `fs-ext`；Windows 需要 Python 和 Visual Studio C++ Build Tools，具体命令见[本地开发说明的 Windows 原生依赖章节](../../docs/engineering/local-development.md#windows-原生依赖)。这与旧源码目录的构建要求一致。
 
 默认使用本应用 `upstream/`。`SOUNDLAB_HARNESS_SOURCE` 可覆盖源码位置；相对路径始终从项目根目录解析。`probe:harness` 仅初始化和关闭，不发送模型请求。
 
