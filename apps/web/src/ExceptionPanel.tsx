@@ -1,7 +1,7 @@
 import {useMembers} from './Members';
 import {useRef,useState} from 'react';import {Alert,Button,Form,Input,Modal,Select,Table,Tag} from 'antd';
 import {useMutation,useQuery,useQueryClient} from '@tanstack/react-query';
-import type {ExceptionRecord} from '../../platform-api/exceptions.ts';
+import type {ExceptionRecord} from '../../zhixing-api/exceptions.ts';
 export function ExceptionPanel({tenant,actor,api,onClose}:{tenant:string;actor:string;api:(path:string,body?:unknown,key?:string)=>Promise<any>;onClose:()=>void}) {
  const {people,ownerOptions,isManager}=useMembers();
  const client=useQueryClient();const[selected,setSelected]=useState<ExceptionRecord|null>(null);const key=useRef('');const[form]=Form.useForm();

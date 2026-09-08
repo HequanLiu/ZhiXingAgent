@@ -1,7 +1,7 @@
 import {seedTestMembers} from '../helpers/member-db.ts';
 import test from 'node:test';import assert from 'node:assert/strict';import {Pool} from 'pg';import {randomUUID} from 'node:crypto';
-import {migratePatrol,runPatrol,savePolicy} from '../../apps/platform-worker/patrol.ts';
-import {migrateExceptions,reconcileExceptions,transitionException} from '../../apps/platform-api/exceptions.ts';
+import {migratePatrol,runPatrol,savePolicy} from '../../apps/zhixing-worker/patrol.ts';
+import {migrateExceptions,reconcileExceptions,transitionException} from '../../apps/zhixing-api/exceptions.ts';
 test('patrol follows reassigned exception owner mapping while escalation remains with manager',async()=>{
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';const admin=new Pool({connectionString});const schema='test_assigned_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
  try{await seedTestMembers(db);await migratePatrol(db);await seedTestMembers(db);await migrateExceptions(db);await db.query(`CREATE TABLE channel_identities(channel text,sender_id text,tenant text,actor text);INSERT INTO channel_identities VALUES('wecom','node-owner','demo','zhao'),('wecom','new-handler','demo','li'),('wecom','manager','demo','chen')`);

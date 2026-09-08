@@ -1,0 +1,8 @@
+{
+  "name": "@zhixing/worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts"
+  }
+}

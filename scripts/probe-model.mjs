@@ -1,3 +1,4 @@
+import { harnessSource } from '../apps/zhixing-harness/source.mjs';
 import { resolve } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { loadEnvFile } from 'node:process';
@@ -10,7 +11,7 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 try { loadEnvFile(resolve(root, '.env')); } catch (error) { if (error.code !== 'ENOENT') throw error; }
 const route = resolveRoute(process.env);
 if (!process.env[route.keyEnv]?.trim()) throw new Error(`Missing ${route.keyEnv}`);
-const source = resolve(root, process.env.SOUNDLAB_HARNESS_SOURCE ?? '../harness-source');
+const source = harnessSource();
 const { DeepSeekHarness } = await import(pathToFileURL(resolve(source, 'packages/sdk/client/lib/index.js')).href);
 const business = process.argv.includes('--business');
 const home = resolve(root, '.runtime/model-probe', randomUUID());
@@ -22,7 +23,7 @@ if(business) patches.push({insert:[{id:'soundlab-readonly-tools',name:pathToFile
   config:{toolsModule:pathToFileURL(resolve(source,'packages/core/tools/lib/index.js')).href,receiptsFile}}]});
 await writeFile(patch, JSON.stringify(patches));
 const harness = new DeepSeekHarness({profile:'sdk-minimal', dshHome:home, cwd:root, processCwd:source,
-  patches:[resolve(root,'config/harness-probe.patch.yml'),patch], provider:route.provider, model:route.model,
+  patches:[resolve(root,'apps/zhixing-harness/probe.patch.yml'),patch], provider:route.provider, model:route.model,
   env:childEnvironment(process.env,true,route.keyEnv), maxTokens:business?2048:256, initializeTimeoutMs:30000, requestTimeoutMs:60000});
 let timeout;
 try {

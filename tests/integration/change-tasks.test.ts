@@ -1,7 +1,7 @@
 import {seedTestMembers} from '../helpers/member-db.ts';
 import test from 'node:test';import assert from 'node:assert/strict';import {Pool} from 'pg';import {randomUUID} from 'node:crypto';
 test('delegated change waits for human approval and recovers a lost execution reply using the same receipt key',async()=>{
- const {migrateChangeTasks,delegateChange,runChangeTask}=await import('../../apps/platform-worker/change-tasks.ts');
+ const {migrateChangeTasks,delegateChange,runChangeTask}=await import('../../apps/zhixing-worker/change-tasks.ts');
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';const root=new Pool({connectionString});const schema='test_tasks_'+randomUUID().replaceAll('-','');await root.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
  const p={tenant:'t',actor:'chen'};let status='proposed',writes=0,receipt:any=null,expectedKey='';const plan={id:'c',orderId:'order',sourceVersion:1,planVersion:1};let lost=true;
  const invoke=async(cap:string,input:any,principal:any,key?:string)=>{assert.deepEqual(principal,p);if(cap==='sampling.changes.list')return [{...plan,status}];if(cap==='sampling.invocation.get'){assert.deepEqual(input,{key:expectedKey});if(!receipt)throw Error('NOT_FOUND');return receipt;}if(cap==='sampling.change.apply'){assert.equal(key,expectedKey);assert.equal(status,'approved');writes++;receipt={id:'receipt',changeId:'c',status:'completed',result:{version:2}};if(lost){lost=false;throw Error('SERVICE_UNAVAILABLE');}return receipt;}throw Error('UNEXPECTED');};
@@ -15,7 +15,7 @@ test('delegated change waits for human approval and recovers a lost execution re
 });
 
 test('rejected approval and changed plan version never dispatch a business write',async()=>{
- const {migrateChangeTasks,delegateChange,runChangeTask}=await import('../../apps/platform-worker/change-tasks.ts');
+ const {migrateChangeTasks,delegateChange,runChangeTask}=await import('../../apps/zhixing-worker/change-tasks.ts');
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';
  const root=new Pool({connectionString});const schema='test_task_guard_'+randomUUID().replaceAll('-','');await root.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
  const p={tenant:'isolated-tenant',actor:'chen'};let writes=0;
@@ -33,7 +33,7 @@ test('rejected approval and changed plan version never dispatch a business write
 });
 
 test('expired claim recovers the receipt and fences the old worker final result', {timeout:15000},async()=>{
- const {migrateChangeTasks,delegateChange,runChangeTask}=await import('../../apps/platform-worker/change-tasks.ts');
+ const {migrateChangeTasks,delegateChange,runChangeTask}=await import('../../apps/zhixing-worker/change-tasks.ts');
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';
  const root=new Pool({connectionString});const schema='test_task_fence_'+randomUUID().replaceAll('-','');await root.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
  const p={tenant:'claim-tenant',actor:'chen'};const plan={id:'fenced',status:'approved',sourceVersion:1,planVersion:1};

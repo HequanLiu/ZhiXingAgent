@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+  "commit": "d347e703908d0406b7a7ef80e3a0e594d86b2215",
+  "version": "0.1.3-alpha.1",
+  "license": "MIT",
+  "sourceDirectory": "upstream",
+  "method": "Unmodified git archive of the pinned commit; no nested git repository or local runtime data."
+}

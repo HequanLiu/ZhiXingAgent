@@ -23,7 +23,9 @@
     "healthcheck": "node scripts/healthcheck.mjs",
     "smoke:browser": "node scripts/browser-smoke.mjs",
     "release:package": "node scripts/package-release.mjs",
-    "member:bootstrap": "tsx scripts/bootstrap-member.ts"
+    "member:bootstrap": "tsx scripts/bootstrap-member.ts",
+    "harness:install": "pnpm --dir apps/zhixing-harness/upstream install --frozen-lockfile --ignore-scripts",
+    "harness:build": "pnpm --dir apps/zhixing-harness/upstream run build:lib:host"
   },
   "engines": {
     "node": ">=22.19.0"

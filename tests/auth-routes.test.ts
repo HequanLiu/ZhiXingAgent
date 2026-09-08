@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import Fastify from 'fastify';
-import {installAuth} from '../apps/platform-api/auth-routes.ts';
+import {installAuth} from '../apps/zhixing-api/auth-routes.ts';
 test('session mode rejects demo headers and service token cannot authorize writes',async()=>{
  const app=Fastify();const principal=installAuth(app,{query:async()=>({rows:[{tenant:'demo',actor:'chen',role:'manager',displayName:'陈静',enabled:true,version:1}]})} as any,{demoMode:false,readToken:'local-test-read-token',origin:'http://127.0.0.1:5179'});
  app.get('/api/soundlab/orders',async req=>principal(req.headers));app.post('/api/write',async req=>principal(req.headers));

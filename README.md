@@ -6,6 +6,13 @@
 
 当前交付为可运行的本地试用版。DeepSeek Harness 是 Agent 内核，平台通过声明式能力和适配器访问独立业务服务；业务数据、审批和幂等结果由业务系统保存。真实 MiniMax-M3 只读分析已验证，尚未完成正式上线验收。
 
+## 应用目录
+
+- `apps/zhixing-api`：平台 API。
+- `apps/zhixing-worker`：后台任务执行。
+- `apps/zhixing-harness`：Harness 配置、源码定位与固定版本上游源码。
+- `apps/web`：前端；`apps/sample-reference-service`：示例业务服务。
+
 ## 已有能力
 
 - 打样订单总览、新建及单份/批量 JSON 导入、可复用模板库、音响七节点模板、流程依赖/日历/工期/负责人/权重/验收标准配置。
@@ -42,11 +49,11 @@ pnpm.cmd dev
 
 本地真实浏览器联调成功：消息 `b68ee87f-ed5c-401b-91e9-c3fbce5ae6df` 经 MiniMax-M3 回复“声研对话已连接。”；只发送连接测试文本。124项回归、类型检查、生产构建通过。证据 `.runtime/chat-live-verification.json`。自动分析与企微外发保持关闭。
 
-相邻 `../harness-source` 使用官方源码基线 `d347e703908d0406b7a7ef80e3a0e594d86b2215`，SDK `0.1.3-alpha.1`。该版本 npm 返回 404，当前依赖本地源码构建；源码目录可用 `SOUNDLAB_HARNESS_SOURCE` 覆盖。先在其目录执行：
+仓库内 `apps/zhixing-harness/upstream` 随项目提交，使用官方源码基线 `d347e703908d0406b7a7ef80e3a0e594d86b2215`，SDK `0.1.3-alpha.1`。该版本 npm 返回 404，当前依赖本地源码构建；源码目录可用 `SOUNDLAB_HARNESS_SOURCE` 覆盖。在项目根目录执行：
 
 ```powershell
-pnpm.cmd install --frozen-lockfile --ignore-scripts
-pnpm.cmd run build:lib:host
+pnpm.cmd harness:install
+pnpm.cmd harness:build
 ```
 
 将本项目 `.env.example` 复制为 `.env`，只在文件中设置 `MINIMAX_API_KEY` 或 `DEEPSEEK_API_KEY`，不要提交密钥。启动器加载该文件，进程环境优先；密钥只传给 Worker。默认路由 MiniMax-M3，可切换 DeepSeek；第二供应商真实推理尚未验证。
@@ -92,7 +99,7 @@ pnpm.cmd backup:verify
 
 ## Windows 原生依赖
 
-跳过安装脚本后需构建 fs-ext。该锁文件的 pnpm 链接布局使 node-gyp 生成的 nan 头文件相对路径失效。已验证的处理是进入 `harness-source/node_modules/.pnpm/fs-ext@2.1.1/node_modules/fs-ext`，将 `CL` 设为 `/I"<harness-source绝对路径>\node_modules\.pnpm\nan@2.28.0\node_modules\nan"`，再执行 `npm.cmd rebuild --ignore-scripts=false`。本机 Python 3.11、VS2022 BuildTools 可完成编译；无需改上游源代码。CL 只作用于构建进程，不写全局环境。
+跳过安装脚本后需构建 fs-ext。该锁文件的 pnpm 链接布局使 node-gyp 生成的 nan 头文件相对路径失效。已验证的处理是进入 `apps/zhixing-harness/upstream/node_modules/.pnpm/fs-ext@2.1.1/node_modules/fs-ext`，将 `CL` 设为 `/I"<apps/zhixing-harness/upstream绝对路径>\node_modules\.pnpm\nan@2.28.0\node_modules\nan"`，再执行 `npm.cmd rebuild --ignore-scripts=false`。本机 Python 3.11、VS2022 BuildTools 可完成编译；无需改上游源代码。CL 只作用于构建进程，不写全局环境。
 
 ## 已确认的集成限制
 

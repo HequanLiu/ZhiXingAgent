@@ -1,0 +1,10 @@
+{
+  "name": "@zhixing/harness",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "install:upstream": "pnpm --dir upstream install --frozen-lockfile --ignore-scripts",
+    "build": "pnpm --dir upstream run build:lib:host",
+    "probe": "node ../../scripts/probe-harness.mjs"
+  }
+}

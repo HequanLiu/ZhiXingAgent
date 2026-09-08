@@ -1,10 +1,10 @@
-import {InstallationRegistry,migrateInstallations} from '../../apps/platform-api/installations.ts';
-import {CapabilityGateway} from '../../apps/platform-api/gateway.ts';
-import {migrateChangeTasks,delegateChange,runChangeTask} from '../../apps/platform-worker/change-tasks.ts';
+import {InstallationRegistry,migrateInstallations} from '../../apps/zhixing-api/installations.ts';
+import {CapabilityGateway} from '../../apps/zhixing-api/gateway.ts';
+import {migrateChangeTasks,delegateChange,runChangeTask} from '../../apps/zhixing-worker/change-tasks.ts';
 import test from 'node:test';import assert from 'node:assert/strict';import {Pool} from 'pg';import {randomUUID} from 'node:crypto';import {readFile} from 'node:fs/promises';
-import {saveMember,resolveMember,listMembers,createDirectoryPool} from '../../apps/platform-api/members.ts';
-import {migrateAuth,provisionUser,login,authenticate} from '../../apps/platform-api/auth.ts';
-import {migrateChannel,receiveFeedback} from '../../apps/platform-api/channel.ts';
+import {saveMember,resolveMember,listMembers,createDirectoryPool} from '../../apps/zhixing-api/members.ts';
+import {migrateAuth,provisionUser,login,authenticate} from '../../apps/zhixing-api/auth.ts';
+import {migrateChannel,receiveFeedback} from '../../apps/zhixing-api/channel.ts';
 test('directory changes serialize bootstrap and last manager, audit real actors, revoke sessions and channel identities',async()=>{
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';const admin=new Pool({connectionString});const schema='test_members_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
  const p={tenant:'company',actor:'mgr-new'};const value={displayName:'新经理',role:'manager' as const,enabled:true,expectedVersion:0};

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import type { CapabilityGateway } from '../../apps/platform-api/gateway.ts';
+import type { CapabilityGateway } from '../../apps/zhixing-api/gateway.ts';
 import type { Principal } from '../platform-contracts/index.ts';
 export function registerSoundlab(app:FastifyInstance,gateway:CapabilityGateway,principal:(headers:Record<string,unknown>)=>Principal) {
   app.get<{Querystring:{orderId:string}}>('/api/soundlab/attachments',async req=>gateway.invoke('sampling.attachments.list',req.query,principal(req.headers)));

@@ -1,4 +1,4 @@
-import {Pool} from 'pg';import {migrateChannel} from '../apps/platform-api/channel.ts';import {resolveMember} from '../apps/platform-api/members.ts';
+import {Pool} from 'pg';import {migrateChannel} from '../apps/zhixing-api/channel.ts';import {resolveMember} from '../apps/zhixing-api/members.ts';
 const {SOUNDLAB_CHANNEL_NAME:channel,SOUNDLAB_CHANNEL_SENDER:sender,SOUNDLAB_USER_TENANT:tenant,SOUNDLAB_USER_ACTOR:actor}=process.env;
 if(![channel,sender,tenant,actor].every(v=>typeof v==='string'&&v.length>0&&v.length<=100))throw new Error('Valid channel, sender, tenant and mapped actor required');
 const db=new Pool({connectionString:process.env.PLATFORM_DATABASE_URL??'postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform'});

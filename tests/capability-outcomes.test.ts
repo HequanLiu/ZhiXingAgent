@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {CapabilityGateway} from '../apps/platform-api/gateway.ts';import {soundlabManifest,installSoundlab} from '../packages/scenario-soundlab/manifest.ts';
+import {CapabilityGateway} from '../apps/zhixing-api/gateway.ts';import {soundlabManifest,installSoundlab} from '../packages/scenario-soundlab/manifest.ts';
 test('write outcomes distinguish approval, validation and uncertain remote writes without exposing raw errors',async()=>{
  const g=new CapabilityGateway();let error='CHANGE_NOT_APPROVED';const provider={invoke:async()=>{throw Error(error);}};installSoundlab(g,'t',provider);const p={tenant:'t',actor:'chen'};
  assert.equal((await g.invokeEnvelope('sampling.change.apply',{id:'c'},p,'key')).status,'awaiting_approval');

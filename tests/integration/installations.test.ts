@@ -1,8 +1,8 @@
 import {seedTestMembers} from '../helpers/member-db.ts';
 import test from 'node:test';import assert from 'node:assert/strict';import {Pool} from 'pg';import {randomUUID} from 'node:crypto';
-import {CapabilityGateway} from '../../apps/platform-api/gateway.ts';
+import {CapabilityGateway} from '../../apps/zhixing-api/gateway.ts';
 test('persistent capability bindings survive reconstruction, isolate tenants, and reject incompatible or stale installs',async()=>{
- const {InstallationRegistry,migrateInstallations}=await import('../../apps/platform-api/installations.ts');
+ const {InstallationRegistry,migrateInstallations}=await import('../../apps/zhixing-api/installations.ts');
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';const root=new Pool({connectionString});const schema='test_install_'+randomUUID().replaceAll('-','');await root.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
  const manifest:any={id:'scenario',version:'1',capabilities:[{id:'read',version:'1',effect:'read',input:{type:'object'}}]};
  const catalog:any={one:{label:'one',capabilities:{read:'1'},provider:{invoke:async()=>({source:1})}},two:{label:'two',capabilities:{read:'1'},provider:{invoke:async()=>({source:2})}},old:{label:'old',capabilities:{read:'0'},provider:{invoke:async()=>({})}}};

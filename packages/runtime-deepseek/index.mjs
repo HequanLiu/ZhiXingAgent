@@ -1,3 +1,4 @@
+import { harnessSource } from '../../apps/zhixing-harness/source.mjs';
 import { resolve } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
@@ -17,7 +18,7 @@ export async function runModel({prompt,pluginURL,signal,chat=false,chatToken}) {
   const route=resolveRoute(process.env);
   const configuration=modelConfiguration();
   if(!(chat?process.env.SOUNDLAB_CHAT_ENABLED==='true'&&!!process.env[route.keyEnv]?.trim():configuration.enabled))throw new Error('MODEL_NOT_CONFIGURED');
-  const source=resolve(root,process.env.SOUNDLAB_HARNESS_SOURCE??'../harness-source');
+  const source=harnessSource();
   const {DeepSeekHarness}=await import(pathToFileURL(resolve(source,'packages/sdk/client/lib/index.js')).href);
   const runId=randomUUID();
   const home=resolve(root,'.runtime/analysis',runId);
@@ -27,7 +28,7 @@ export async function runModel({prompt,pluginURL,signal,chat=false,chatToken}) {
   await writeFile(patch,JSON.stringify([...providerPatch(route),...(pluginURL?[{insert:[{id:'scenario-readonly-tools',name:pluginURL,
     config:{toolsModule:pathToFileURL(resolve(source,'packages/core/tools/lib/index.js')).href,receiptsFile,maxCalls:2,...(chatToken?{chatToken}:{})}}]}]:[])]));
   const harness=new DeepSeekHarness({profile:'sdk-minimal',dshHome:home,cwd:root,processCwd:source,
-    patches:[resolve(root,'config/harness-probe.patch.yml'),patch],provider:route.provider,model:route.model,
+    patches:[resolve(root,'apps/zhixing-harness/probe.patch.yml'),patch],provider:route.provider,model:route.model,
     env:childEnvironment(process.env,true,route.keyEnv),maxTokens:2048,initializeTimeoutMs:configuration.timeouts.initializeTimeoutMs,requestTimeoutMs:configuration.timeouts.requestTimeoutMs});
   let timer;
   let abort;

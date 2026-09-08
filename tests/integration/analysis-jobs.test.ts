@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
-import {migrateJobs,enqueueAnalysis,claimAnalysis,failAnalysis,recoverAnalysis} from '../../apps/platform-worker/jobs.ts';
+import {migrateJobs,enqueueAnalysis,claimAnalysis,failAnalysis,recoverAnalysis} from '../../apps/zhixing-worker/jobs.ts';
 
 test('durable analysis deduplicates events, retries, recovers and stops after three attempts',async()=>{
   const db=new Pool({connectionString:'postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform'});
@@ -39,7 +39,7 @@ test('durable analysis deduplicates events, retries, recovers and stops after th
 });
 
 test('manual retry enforces scope, stale snapshot, single winner and immutable history',async()=>{
- const {retryAnalysis}=await import('../../apps/platform-worker/jobs.ts') as any;
+ const {retryAnalysis}=await import('../../apps/zhixing-worker/jobs.ts') as any;
  assert.equal(typeof retryAnalysis,'function');
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';
  const db=new Pool({connectionString});const schema='test_retry_'+randomUUID().replaceAll('-','');
@@ -74,7 +74,7 @@ test('manual retry enforces scope, stale snapshot, single winner and immutable h
 
 
 test('old claim failure and completion cannot overwrite recovered or manually retried jobs',async()=>{
- const jobs=await import('../../apps/platform-worker/jobs.ts') as any;
+ const jobs=await import('../../apps/zhixing-worker/jobs.ts') as any;
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';
  const db=new Pool({connectionString});const schema='test_fence_'+randomUUID().replaceAll('-','');
  await db.query(`CREATE SCHEMA ${schema}`);const isolated=new Pool({connectionString,options:`-c search_path=${schema}`});
@@ -104,7 +104,7 @@ test('old claim failure and completion cannot overwrite recovered or manually re
 });
 
 test('manual retry rolls back unchanged when audit insert fails and hides database details',async()=>{
- const {retryAnalysis}=await import('../../apps/platform-worker/jobs.ts');
+ const {retryAnalysis}=await import('../../apps/zhixing-worker/jobs.ts');
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';
  const db=new Pool({connectionString});const schema='test_audit_failure_'+randomUUID().replaceAll('-','');
  await db.query(`CREATE SCHEMA ${schema}`);const isolated=new Pool({connectionString,options:`-c search_path=${schema}`});

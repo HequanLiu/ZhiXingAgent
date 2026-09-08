@@ -1,5 +1,5 @@
 import type {Order} from '../sampling-contracts/index.ts';
-import type {PatrolObject} from '../../apps/platform-worker/patrol.ts';
+import type {PatrolObject} from '../../apps/zhixing-worker/patrol.ts';
 export async function samplingPatrol(tenant:string):Promise<PatrolObject[]> {
  if(!tenant||!process.env.BUSINESS_BRIDGE_KEY)throw new Error('CAPABILITY_UNAVAILABLE');
  const directoryResponse=await fetch('http://127.0.0.1:4310/internal/members',{headers:{authorization:`Bearer ${process.env.BUSINESS_BRIDGE_KEY}`,'x-tenant':tenant},signal:AbortSignal.timeout(3000)});if(!directoryResponse.ok)throw new Error('CAPABILITY_UNAVAILABLE');const members=await directoryResponse.json() as import('../member-authorization/index.ts').Member[];const manager=members.find(m=>m.enabled&&m.role==='manager'&&m.tenant===tenant);if(!manager)throw new Error('CAPABILITY_UNAVAILABLE');

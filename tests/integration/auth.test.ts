@@ -1,6 +1,6 @@
 import {seedTestMembers} from '../helpers/member-db.ts';
 import test from 'node:test';import assert from 'node:assert/strict';import {Pool} from 'pg';import {randomUUID} from 'node:crypto';
-import {migrateAuth,provisionUser,login,authenticate,logout} from '../../apps/platform-api/auth.ts';
+import {migrateAuth,provisionUser,login,authenticate,logout} from '../../apps/zhixing-api/auth.ts';
 test('sessions require provisioned tenant identity and expire or revoke without exposing password hashes',async()=>{
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';const admin=new Pool({connectionString});const schema='test_auth_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
  try {

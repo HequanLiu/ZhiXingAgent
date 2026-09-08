@@ -1,5 +1,5 @@
 import {Pool} from 'pg';
-import {migrateAuth,provisionUser} from '../apps/platform-api/auth.ts';
+import {migrateAuth,provisionUser} from '../apps/zhixing-api/auth.ts';
 const db=new Pool({connectionString:process.env.PLATFORM_DATABASE_URL??'postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform'});
 try {
  await migrateAuth(db);

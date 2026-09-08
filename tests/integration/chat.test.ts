@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {Pool} from 'pg';import {randomUUID} from 'node:crypto';import {readFile} from 'node:fs/promises';
-import {enqueueChat,listChat,runChat} from '../../apps/platform-worker/chat.ts';
-import {chatToolToken,queryChatOrders} from '../../apps/platform-api/chat-tools.ts';
+import {enqueueChat,listChat,runChat} from '../../apps/zhixing-worker/chat.ts';
+import {chatToolToken,queryChatOrders} from '../../apps/zhixing-api/chat-tools.ts';
 test('chat isolates histories, deduplicates submissions and does not retry unknown model outcomes',async()=>{
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform',schema='test_chat_'+randomUUID().replaceAll('-','');const admin=new Pool({connectionString});await admin.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
  try{await db.query(await readFile(new URL('../../migrations/platform/005-members.sql',import.meta.url),'utf8'));await db.query(await readFile(new URL('../../migrations/platform/006-chat.sql',import.meta.url),'utf8'));await db.query("INSERT INTO tenant_members VALUES('one','alice','Alice','member',true,1),('two','alice','Alice','member',true,1)");await db.query(await readFile(new URL('../../migrations/platform/007-chat-evidence.sql',import.meta.url),'utf8'));const p={tenant:'one',actor:'alice'},id=randomUUID();

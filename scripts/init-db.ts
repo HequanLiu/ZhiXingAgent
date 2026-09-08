@@ -1,4 +1,4 @@
-import {seedDemoMembers} from '../apps/platform-api/members.ts';
+import {seedDemoMembers} from '../apps/zhixing-api/members.ts';
 import {Pool} from 'pg';
 import {createHash} from 'node:crypto';
 import {readdir,readFile} from 'node:fs/promises';

@@ -1,6 +1,6 @@
 import {soundlabOutput} from './output-contracts.ts';
 import type {ScenarioManifest,ValueSchema,CapabilityProvider} from '../platform-contracts/index.ts';
-import type {CapabilityGateway} from '../../apps/platform-api/gateway.ts';
+import type {CapabilityGateway} from '../../apps/zhixing-api/gateway.ts';
 const str:ValueSchema={type:'string',maxLength:500};const number:ValueSchema={type:'integer',minimum:0};
 const object=(properties:Record<string,ValueSchema>,required:string[]=[]):ValueSchema=>({type:'object',properties,required,additionalProperties:false});
 const node={id:str,nodeId:str,expectedVersion:{type:'integer',minimum:1} as ValueSchema};

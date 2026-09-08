@@ -1,6 +1,6 @@
 import {seedTestMembers} from '../helpers/member-db.ts';
 import test from 'node:test';import assert from 'node:assert/strict';import {Pool} from 'pg';import {randomUUID} from 'node:crypto';
-import {migrateExceptions,reconcileExceptions,listExceptions,transitionException} from '../../apps/platform-api/exceptions.ts';
+import {migrateExceptions,reconcileExceptions,listExceptions,transitionException} from '../../apps/zhixing-api/exceptions.ts';
 test('exception lifecycle isolates tenants, preserves assignment, audits source changes and serializes commands',async()=>{
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';const admin=new Pool({connectionString});const schema='test_exceptions_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
  const manager={tenant:'demo',actor:'chen'},owner={tenant:'demo',actor:'zhao'};

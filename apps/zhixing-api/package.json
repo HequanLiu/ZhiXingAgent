@@ -1,0 +1,8 @@
+{
+  "name": "@zhixing/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx server.ts"
+  }
+}

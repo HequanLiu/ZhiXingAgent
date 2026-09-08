@@ -1,6 +1,6 @@
 import {seedTestMembers} from '../helpers/member-db.ts';
 import test from 'node:test';import assert from 'node:assert/strict';import {Pool} from 'pg';import {randomUUID} from 'node:crypto';
-import {migratePatrol,savePolicy,runPatrol} from '../../apps/platform-worker/patrol.ts';
+import {migratePatrol,savePolicy,runPatrol} from '../../apps/zhixing-worker/patrol.ts';
 test('patrol persists configuration, deduplicates reminders and survives stale workers',async()=>{
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';
  const admin=new Pool({connectionString});const schema='test_patrol_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA ${schema}`);

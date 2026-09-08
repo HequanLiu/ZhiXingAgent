@@ -1,6 +1,6 @@
 import {readdir,readFile,writeFile,mkdir,copyFile} from 'node:fs/promises';import {resolve,join,relative,sep} from 'node:path';import {createHash} from 'node:crypto';import {execFile} from 'node:child_process';import {promisify} from 'node:util';
 const root=resolve('.');const stamp=new Date().toISOString().replaceAll(':','-');const output=resolve('.runtime/releases',stamp);const stage=join(output,'soundlab');await mkdir(stage,{recursive:true});
-const entries=['apps','packages','scripts','migrations','config','docs','tests','dist/web','.github/workflows','README.md','.env.example','package.json','pnpm-lock.yaml','pnpm-workspace.yaml','tsconfig.json','docker-compose.yml'];
+const entries=['apps','packages','scripts','migrations','config','docs','tests','dist/web','.github/workflows','README.md','LICENSE','.env.example','package.json','pnpm-lock.yaml','pnpm-workspace.yaml','tsconfig.json','docker-compose.yml'];
 const files=[];const forbidden=name=>['node_modules','.git','.runtime','.codex','.agents'].includes(name)||(name.startsWith('.env')&&name!=='.env.example')||/\.(pem|key|pfx)$/i.test(name);
 async function collect(path){const info=await import('node:fs/promises').then(fs=>fs.lstat(path));if(info.isSymbolicLink())return;if(info.isDirectory()){for(const entry of await readdir(path,{withFileTypes:true}))if(!forbidden(entry.name))await collect(join(path,entry.name));}else if(info.isFile())files.push(path);}
 for(const entry of entries)await collect(resolve(root,entry));

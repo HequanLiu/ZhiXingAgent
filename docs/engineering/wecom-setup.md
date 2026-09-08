@@ -6,7 +6,7 @@
 
 配置仅从进程环境读取：`WECOM_CORP_ID`、`WECOM_AGENT_ID`、`WECOM_CALLBACK_TOKEN`、`WECOM_ENCODING_AES_KEY`（43字符）、`WECOM_APP_SECRET`。禁止将实际值写入文档、日志或仓库。外发另需显式 `WECOM_SEND_ENABLED=true`，默认不发送。
 
-在平台 API composition root 调用 `installWecom(app, db, invoke)`，`invoke(principal,input,key)` 通过现有 `sampling.feedback.submit` gateway 执行业务写入，保持传入的幂等键。该注册函数位于 `apps/platform-api/wecom.ts`。数据库使用已有 `migrateChannel` 创建的 channel 表。
+在平台 API composition root 调用 `installWecom(app, db, invoke)`，`invoke(principal,input,key)` 通过现有 `sampling.feedback.submit` gateway 执行业务写入，保持传入的幂等键。该注册函数位于 `apps/zhixing-api/wecom.ts`。数据库使用已有 `migrateChannel` 创建的 channel 表。
 
 自建应用“接收消息”URL 指向公开 HTTPS 地址的 `/api/wecom/callback`。网关需要保留原始 XML 和 query，GET 用于URL验证，POST 用于加密回调。回调无浏览器登录，使用企业微信签名、AES解密及 CorpID/AgentID 校验。时间戳允许5分钟偏差，部署需校准时钟。
 

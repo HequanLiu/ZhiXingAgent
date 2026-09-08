@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 const valid={route:'minimax',enabled:true,initializeTimeoutMs:30000,requestTimeoutMs:60000,runTimeoutMs:90000,analysisIntervalMs:5000};
 test('settings validate before use, retain secrets only in env copy, and clear optional overrides',async()=>{
- const mod=await import('../apps/platform-worker/runtime-settings.ts');
+ const mod=await import('../apps/zhixing-worker/runtime-settings.ts');
  assert.equal(typeof mod.applyRuntimeSettings,'function');
  const base={MINIMAX_API_KEY:'private',DEEPSEEK_API_KEY:'other',SOUNDLAB_MODEL_ID:'previous',SOUNDLAB_MODEL_BASE_URL:'https://old.example.com',PATH:'base'};
  const applied=mod.applyRuntimeSettings(base,valid);
@@ -16,7 +16,7 @@ test('settings validate before use, retain secrets only in env copy, and clear o
 
 
 test('applying route changes preserves only the selected credential in the child environment',async()=>{
- const {applyRuntimeSettings}=await import('../apps/platform-worker/runtime-settings.ts');
+ const {applyRuntimeSettings}=await import('../apps/zhixing-worker/runtime-settings.ts');
  const {childEnvironment}=await import(new URL('../scripts/lib/runtime-probe.mjs',import.meta.url).href);
  const base={MINIMAX_API_KEY:'minimax-private',DEEPSEEK_API_KEY:'deepseek-private'};
  const env=applyRuntimeSettings(base,{...valid,route:'deepseek',modelId:'custom-v1',baseURL:'https://api.deepseek.com'});
@@ -30,7 +30,7 @@ test('applying route changes preserves only the selected credential in the child
 
 
 test('browser settings cannot redirect provider credentials to an unapproved endpoint',async()=>{
- const {applyRuntimeSettings}=await import('../apps/platform-worker/runtime-settings.ts');
+ const {applyRuntimeSettings}=await import('../apps/zhixing-worker/runtime-settings.ts');
  for(const baseURL of ['https://attacker.example/v1','https://api.minimax.cn.evil.example/v1','https://api.minimax.cn:444/v1','https://api.minimax.cn/v1/redirect','https://api.minimax.cn/v1?target=evil','https://user:pass@api.minimax.cn/v1','https://api.deepseek.com','https://api.minimax.cn/v1#evil']) {
   assert.throws(()=>applyRuntimeSettings({MINIMAX_API_KEY:'private'},{...valid,baseURL}),/^Error: VALIDATION_ERROR$/);
  }

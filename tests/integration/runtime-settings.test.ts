@@ -5,7 +5,7 @@ import {Pool} from 'pg';
 import {randomUUID} from 'node:crypto';
 const settings={route:'minimax',enabled:false,initializeTimeoutMs:30000,requestTimeoutMs:60000,runTimeoutMs:90000,analysisIntervalMs:5000};
 test('admin settings persist safely with replay, optimistic race, immutable audit and tenant policy',async()=>{
- const mod=await import('../../apps/platform-worker/runtime-settings.ts');
+ const mod=await import('../../apps/zhixing-worker/runtime-settings.ts');
  assert.equal(typeof mod.saveRuntimeSettings,'function');
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';
  const db=new Pool({connectionString});const schema='test_settings_'+randomUUID().replaceAll('-','');
@@ -36,7 +36,7 @@ test('admin settings persist safely with replay, optimistic race, immutable audi
 
 
 test('settings database errors remain safe and audit insert failure rolls back the save',async()=>{
- const mod=await import('../../apps/platform-worker/runtime-settings.ts');
+ const mod=await import('../../apps/zhixing-worker/runtime-settings.ts');
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';
  const db=new Pool({connectionString});const schema='test_settings_rollback_'+randomUUID().replaceAll('-','');
  await db.query(`CREATE SCHEMA ${schema}`);const isolated=new Pool({connectionString,options:`-c search_path=${schema}`});
@@ -59,7 +59,7 @@ test('settings database errors remain safe and audit insert failure rolls back t
 
 
 test('malicious persisted endpoint is rejected on read before a worker can apply it',async()=>{
- const mod=await import('../../apps/platform-worker/runtime-settings.ts');
+ const mod=await import('../../apps/zhixing-worker/runtime-settings.ts');
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';
  const db=new Pool({connectionString});const schema='test_settings_endpoint_'+randomUUID().replaceAll('-','');
  await db.query(`CREATE SCHEMA ${schema}`);const isolated=new Pool({connectionString,options:`-c search_path=${schema}`});

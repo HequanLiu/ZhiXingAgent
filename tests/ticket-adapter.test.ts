@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import Fastify from 'fastify';
-import {ticketProvider} from '../packages/adapter-ticket-reference/index.ts';import {CapabilityGateway} from '../apps/platform-api/gateway.ts';
+import {ticketProvider} from '../packages/adapter-ticket-reference/index.ts';import {CapabilityGateway} from '../apps/zhixing-api/gateway.ts';
 test('second independent HTTP schema maps tickets and employee identities without gateway changes',async()=>{
  const app=Fastify();const ticket={ticketId:'ALT-01',revision:4,modelName:'音箱',clientLabel:'测试客户',targetDate:'2026-09-20',stages:[{stageCode:'build',title:'装配',ownerEmployeeCode:'EMP-9',state:'doing',completion:20,dueOn:'2026-09-15',share:1}]};
  app.get('/api/prototype-tickets',async req=>{assert.equal(req.headers['x-integration-key'],'test-key');assert.equal((req.query as any).organization,'demo');return {items:[ticket]};});

@@ -55,13 +55,15 @@ importers:
         specifier: 8.2.2
         version: 8.2.2(@types/node@22.20.0)(esbuild@0.28.2)(tsx@4.23.13)
 
-  apps/platform-api: {}
-
-  apps/platform-worker: {}
-
   apps/sample-reference-service: {}
 
   apps/web: {}
+
+  apps/zhixing-api: {}
+
+  apps/zhixing-harness: {}
+
+  apps/zhixing-worker: {}
 
   packages/adapter-sample-reference: {}
 

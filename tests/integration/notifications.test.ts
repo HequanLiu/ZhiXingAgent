@@ -1,7 +1,7 @@
 import {seedTestMembers} from '../helpers/member-db.ts';
 import test from 'node:test';import assert from 'node:assert/strict';import {Pool} from 'pg';import {randomUUID} from 'node:crypto';
-import {migratePatrol,savePolicy,runPatrol} from '../../apps/platform-worker/patrol.ts';
-import * as notifications from '../../apps/platform-worker/notifications.ts';
+import {migratePatrol,savePolicy,runPatrol} from '../../apps/zhixing-worker/patrol.ts';
+import * as notifications from '../../apps/zhixing-worker/notifications.ts';
 test('scoped patrol, escalation isolation, concurrent delivery fencing and unknown recovery',async()=>{
  const connectionString='postgresql://soundlab_platform:platform-local-only@127.0.0.1:55439/soundlab_platform';const admin=new Pool({connectionString});const schema='test_notifications_'+randomUUID().replaceAll('-','');await admin.query(`CREATE SCHEMA ${schema}`);const db=new Pool({connectionString,options:`-c search_path=${schema}`});
  try{await seedTestMembers(db);await migratePatrol(db);await seedTestMembers(db);await notifications.migrateNotifications(db);await db.query('CREATE TABLE channel_identities(channel text,sender_id text,tenant text,actor text)');await db.query("INSERT INTO channel_identities VALUES('wecom','zhao-user','demo','zhao'),('wecom','chen-user','demo','chen')");

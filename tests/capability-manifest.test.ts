@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {CapabilityGateway} from '../apps/platform-api/gateway.ts';
+import {CapabilityGateway} from '../apps/zhixing-api/gateway.ts';
 test('capability manifests validate input and reject missing or incompatible bindings atomically',async()=>{
  const g=new CapabilityGateway();let calls=0;const provider={invoke:async()=>{calls++;return {ok:true};}};
  const manifest={id:'test-scene',version:'1',capabilities:[{id:'thing.update',version:'1',effect:'write' as const,input:{type:'object' as const,properties:{id:{type:'string' as const},expectedVersion:{type:'integer' as const}},required:['id','expectedVersion'],additionalProperties:false}}]};
